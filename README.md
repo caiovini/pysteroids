@@ -18,7 +18,7 @@ python game.py
 
 ## Game
 
-Press key up to move the spaceship and keys left, right to change its direction<br/>
+Press key up to move the spaceship and keys left and right to change its direction<br/>
 Press space to shoot and do not let the asteroids hit you.<br/>
 
 
