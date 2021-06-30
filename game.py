@@ -13,9 +13,10 @@ from enum import Enum
 clock = pg.time.Clock()
 space_step = 1/60
 
+
 class SpawnSideAsteroid(Enum):
-        LEFT = 0,
-        RIGHT = 1
+    LEFT = 0,
+    RIGHT = 1
 
 
 def main():
@@ -40,7 +41,6 @@ def main():
 
     space.add(spaceship.body)
     game_over, asteroids, bullets = False, [], deque()
-    
 
     def add_bullet():
 
@@ -54,9 +54,8 @@ def main():
 
         screen.blit(ast.image, ast.body.position)
         ast.set_position(*ast.body.position)
-        if not game_over: 
+        if not game_over:
             ast.spin()
-        
 
         if spaceship.rect.colliderect(pg.Rect(ast.rect.x, ast.rect.y,
                                               ast.rect.w//2, ast.rect.h//2)):
@@ -82,12 +81,16 @@ def main():
 
             if random.choice([SpawnSideAsteroid.LEFT, SpawnSideAsteroid.RIGHT]) == SpawnSideAsteroid.LEFT:
 
-                asteroid.set_position(-asteroid.rect.w, random.randint(0, SCREEN_HEIGHT))
-                asteroid.body.apply_impulse_at_local_point((impulse_x, impulse_y), (0, 0))
+                asteroid.set_position(-asteroid.rect.w,
+                                      random.randint(0, SCREEN_HEIGHT))
+                asteroid.body.apply_impulse_at_local_point(
+                    (impulse_x, impulse_y), (0, 0))
 
             else:
-                asteroid.set_position(SCREEN_WIDTH+asteroid.rect.w, random.randint(0, SCREEN_HEIGHT))
-                asteroid.body.apply_impulse_at_local_point((-impulse_x, -impulse_y), (0, 0))
+                asteroid.set_position(
+                    SCREEN_WIDTH+asteroid.rect.w, random.randint(0, SCREEN_HEIGHT))
+                asteroid.body.apply_impulse_at_local_point(
+                    (-impulse_x, -impulse_y), (0, 0))
 
             space.add(asteroid.body)
             asteroids.append(asteroid)
@@ -96,7 +99,6 @@ def main():
         for star in stars:
             pg.draw.circle(
                 screen, WHITE, (star["x"], star["y"]), star["radius"], width=0)
-
 
         for event in pg.event.get():
 
@@ -116,8 +118,10 @@ def main():
         if not game_over:
             keys = pg.key.get_pressed()
             if keys[pg.K_UP]:
-                dist_x, dist_y = spaceship.get_distance_to_apply_force(speed=10000)
-                spaceship.body.apply_force_at_local_point((dist_x, dist_y), (0, 0))
+                dist_x, dist_y = spaceship.get_distance_to_apply_force(
+                    speed=10000)
+                spaceship.body.apply_force_at_local_point(
+                    (dist_x, dist_y), (0, 0))
 
             keys = pg.key.get_pressed()
             if keys[pg.K_LEFT]:
@@ -143,45 +147,43 @@ def main():
                 spaceship.set_position(y=-spaceship.rect.h)
 
         bullets_for_exclusion = []
-        for bullet in list(bullets)[1:]: # Skip first bullet
+        for bullet in list(bullets)[1:]:  # Skip first bullet
 
             if not(0 < bullet.body.position[1] < SCREEN_HEIGHT) or \
-                    not(0 < bullet.body.position[0] < SCREEN_WIDTH) or \
-                        bullet.did_collide:
+                not(0 < bullet.body.position[0] < SCREEN_WIDTH) or \
+                    bullet.did_collide:
 
                 bullets_for_exclusion.append(bullet)
             else:
                 screen.blit(bullet.image, bullet.body.position)
                 bullet.set_position(*bullet.body.position)
 
-
         [bullets.remove(b) for b in bullets_for_exclusion]
 
-        asteroids_for_exclusion = filter(lambda x: x, 
-            [process_asteroids_and_check_collisions(ast, bullets) for ast in asteroids])
+        asteroids_for_exclusion = filter(lambda x: x,
+                                         [process_asteroids_and_check_collisions(ast, bullets) for ast in asteroids])
 
         for a in asteroids_for_exclusion:
 
             if a.type_image == TypeImage.LARGE or \
-                                a.type_image == TypeImage.MEDIUM:
+                    a.type_image == TypeImage.MEDIUM:
 
                 for i in range(1, -2, -2):
-                    asteroid = Asteroid(TypeImage.MEDIUM 
-                                            if a.type_image == TypeImage.LARGE 
-                                                                else TypeImage.SMALL)
+                    asteroid = Asteroid(TypeImage.MEDIUM
+                                        if a.type_image == TypeImage.LARGE
+                                        else TypeImage.SMALL)
                     asteroid.set_position(*a.body.position)
-                    asteroid.body.apply_impulse_at_local_point((random.choice([-1500, 1500]), i*3000), (0, 0))
+                    asteroid.body.apply_impulse_at_local_point(
+                        (random.choice([-1500, 1500]), i*3000), (0, 0))
                     space.add(asteroid.body)
                     asteroids.append(asteroid)
-
 
             asteroids.remove(a)
             space.remove(a.body)
 
-
         screen.blit(spaceship.image, spaceship.body.position)
 
-        if not game_over: 
+        if not game_over:
             space.step(space_step)
         spaceship.set_position(*spaceship.body.position)
         bullets[0].set_position(spaceship.body.position[0] + 40,

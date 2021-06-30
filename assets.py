@@ -45,17 +45,25 @@ class Asteroid(_Sprite):
 
         r = range(10000, 10016)
         self.index = cycle(range(0, len(r)))
-        self.large_images = self.\
-            load_images(
-                [join(_large_asteroid_path, f"a{img}.png") for img in r])
+        self.large_images = []
+        self.medium_images = []
+        self.small_images = []
 
-        self.medium_images = self.\
-            load_images(
-                [join(_medium_asteroid_path, f"a{img}.png") for img in r])
+        if self.type_image == TypeImage.LARGE:
+            self.large_images = self.\
+                load_images(
+                    [join(_large_asteroid_path, f"a{img}.png") for img in r])
 
-        self.small_images = self.\
-            load_images(
-                [join(_small_asteroid_path, f"a{img}.png") for img in r])
+        elif self.type_image == TypeImage.MEDIUM:
+            self.medium_images = self.\
+                load_images(
+                    [join(_medium_asteroid_path, f"a{img}.png") for img in r])
+
+        else:
+            self.small_images = self.\
+                load_images(
+                    [join(_small_asteroid_path, f"a{img}.png") for img in r])
+
         super().__init__(self.get_list_images()[next(self.index)])
 
     def spin(self):
@@ -102,12 +110,12 @@ class SpaceShip(_Sprite):
         self.image = rot_image.subsurface(rot_rect).copy()
 
     def get_distance_to_apply_force(self, *, speed):
-        
+
         x = self.body.position[0] + \
-                math.cos(math.radians(360 - self.angle[0])) * speed
+            math.cos(math.radians(360 - self.angle[0])) * speed
         dist_x = (x - self.body.position[0])
         y = self.body.position[0] + \
-                math.sin(math.radians(360 - self.angle[0])) * speed
+            math.sin(math.radians(360 - self.angle[0])) * speed
         dist_y = (y - self.body.position[1])
 
         return dist_x, dist_y
@@ -132,7 +140,6 @@ class Bullet(_Sprite):
 
         dist_x, dist_y = spaceship.get_distance_to_apply_force(speed=150000)
         self.body.apply_force_at_local_point((dist_x, dist_y), (0, 0))
-
 
     def set_position(self, x, y):
         self.body.position = x, y
